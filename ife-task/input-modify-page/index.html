@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Modify Checkbox and Radio</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <style>
+            label {
+                vertical-align: middle;
+            }
+            input[type='radio']:checked,
+            input[type='radio'],
+            input[type='checkbox'],
+            input[type='checkbox']:checked {
+                -webkit-appearance: none;
+            }
+
+            /* 使用伪元素实现效果 */
+            .pseudo-radio {
+                position: relative;
+                width: 16px;
+                height: 16px;
+                border-radius: 50%;
+                border: solid 1px #ccc;
+                vertical-align: middle;
+            }
+            .pseudo-radio:checked::after {
+                content: '';
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                width: .5rem;
+                height: .5rem;
+                margin-top: -.25rem;
+                margin-left: -.25rem;
+                border-radius: 50%;
+                background-color: pink;
+            }
+            .pseudo-radio:checked {
+                border-color: pink;
+            }
+            .pseudo-checkbox {
+                position: relative;
+                width: 16px;
+                height: 16px;
+                border: solid 1px #ccc;
+                vertical-align: middle;
+            }
+            .pseudo-checkbox:checked {
+                border-color: pink;
+            }
+            .pseudo-checkbox:checked::after {
+                content: '\f00c';
+                color: pink;
+            }
+
+            /* 使用雪碧图实现效果 */
+            .sprite-radio {
+                position: relative;
+                width: 16px;
+                height: 16px;
+                vertical-align: middle;
+                background-image: url('./input-sprite.png');
+                background-position: 76px 40px;
+            }
+            .sprite-radio:checked {
+                background-position: 41px 40px;
+            }
+            .sprite-checkbox {
+                position: relative;
+                width: 16px;
+                height: 16px;
+                vertical-align: middle;
+                background-image: url('./input-sprite.png');
+                background-position: 76px 68px;
+            }
+            .sprite-checkbox:checked {
+                border-color: sprite;
+                background-position: 41px 68px;
+            }
+        </style>
+    </head>
+    <body>
+        <form action="" id="pseudoForm">
+            <label for="pseudoForm">伪元素实现效果的表单</label>
+            <fieldset class="form-group">
+                <legend>是男的吗?</legend>
+                <label for="pseudoRadioIsMan">是</label>
+                <input class="pseudo-radio" id="pseudoRadioIsMan" type="radio" name="man">
+                <label for="pseudoRadioNotMan">不是</label>
+                <input class="pseudo-radio" id="pseudoRadioNotMan" type="radio" name="man">
+            </fieldset>
+            <fieldset class="form-group">
+                <legend>要什么服务?</legend>
+                <label for="pseudoCheckboxSing">唱歌</label>
+                <input class="pseudo-checkbox" type="checkbox" id="pseudoCheckboxSing">
+                <label for="pseudoCheckboxDance">跳舞</label>
+                <input class="pseudo-checkbox" type="checkbox" id="pseudoCheckboxDance">
+                <label for="pseudoCheckboxPlay">玩</label>
+                <input class="pseudo-checkbox" type="checkbox" id="pseudoCheckboxPlay">
+            </fieldset>
+        </form>
+        <br>
+        <form action="" id="spriteForm">
+            <label for="spriteForm">雪碧图实现效果的表单</label>
+            <fieldset class="form-group">
+                <legend>是男的吗?</legend>
+                <label for="spriteRadioIsMan">是</label>
+                <input class="sprite-radio" id="spriteRadioIsMan" type="radio" name="man">
+                <label for="spriteRadioNotMan">不是</label>
+                <input class="sprite-radio" id="spriteRadioNotMan" type="radio" name="man">
+            </fieldset>
+            <fieldset class="form-group">
+                <legend>要什么服务?</legend>
+                <label for="spriteCheckboxSing">唱歌</label>
+                <input class="sprite-checkbox" type="checkbox" id="spriteCheckboxSing">
+                <label for="spriteCheckboxDance">跳舞</label>
+                <input class="sprite-checkbox" type="checkbox" id="spriteCheckboxDance">
+                <label for="spriteCheckboxPlay">玩</label>
+                <input class="sprite-checkbox" type="checkbox" id="spriteCheckboxPlay">
+            </fieldset>
+        </form>
+    </body>
+</html>

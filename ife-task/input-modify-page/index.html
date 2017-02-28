@@ -78,6 +78,50 @@
                 border-color: sprite;
                 background-position: 41px 68px;
             }
+
+            /* 使用伪元素实现效果Version 2*/
+            #pseudoFormV2 input {
+                display: none;
+            }
+            .pseudo-radio-v2 + label {
+                display: inline-block;
+                position: relative;
+                width: 16px;
+                height: 16px;
+                border-radius: 50%;
+                border: solid 1px #ccc;
+                vertical-align: middle;
+            }
+            .pseudo-radio-v2:checked + label::after {
+                content: '';
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                width: 8px;
+                height: 8px;
+                margin-top: -4px;
+                margin-left: -4px;
+                border-radius: 50%;
+                background-color: pink;
+            }
+            .pseudo-radio-v2:checked + label {
+                border-color: pink;
+            }
+            .pseudo-checkbox-v2 + label {
+                display: inline-block;
+                position: relative;
+                width: 16px;
+                height: 16px;
+                border: solid 1px #ccc;
+                vertical-align: middle;
+            }
+            .pseudo-checkbox-v2:checked + label {
+                border-color: pink;
+            }
+            .pseudo-checkbox-v2:checked + label::after {
+                content: '\f00c';
+                color: pink;
+            }
         </style>
     </head>
     <body>
@@ -118,6 +162,37 @@
                 <input class="sprite-checkbox" type="checkbox" id="spriteCheckboxDance">
                 <label for="spriteCheckboxPlay">玩</label>
                 <input class="sprite-checkbox" type="checkbox" id="spriteCheckboxPlay">
+            </fieldset>
+        </form>
+
+        <hr>
+
+        <form action="" id="pseudoFormV2">
+            <fieldset class="form-group">
+                <legend>是男的吗?</legend>
+                <label for="pseudoRadioIsMan-v2">是
+                    <input class="pseudo-radio-v2" id="pseudoRadioIsMan-v2" type="radio" name="man">
+                    <label for="pseudoRadioIsMan-v2"></label>
+                </label>
+                <label for="pseudoRadioNotMan-v2">不是
+                    <input class="pseudo-radio-v2" id="pseudoRadioNotMan-v2" type="radio" name="man">
+                    <label for="pseudoRadioNotMan-v2"></label>
+                </label>
+            </fieldset>
+            <fieldset class="form-group">
+                <legend>要什么服务?</legend>
+                <label for="pseudoCheckboxSing-v2">唱歌
+                    <input class="pseudo-checkbox-v2" type="checkbox" id="pseudoCheckboxSing-v2">
+                    <label for="pseudoCheckboxSing-v2"></label>
+                </label>
+                <label for="pseudoCheckboxDance-v2">跳舞
+                    <input class="pseudo-checkbox-v2" type="checkbox" id="pseudoCheckboxDance-v2">
+                    <label for="pseudoCheckboxDance-v2"></label>
+                </label>
+                <label for="pseudoCheckboxPlay-v2">玩
+                    <input class="pseudo-checkbox-v2" type="checkbox" id="pseudoCheckboxPlay-v2">
+                    <label for="pseudoCheckboxPlay-v2"></label>
+                </label>
             </fieldset>
         </form>
     </body>

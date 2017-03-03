@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Dynamic Data Binding Part One</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <style>
+        .print-screen {
+            height: 500px;
+            overflow: auto;
+        }
+        .print-screen,
+        .origin-data-fieldset {
+            box-sizing: border-box;
+            margin: 0;
+            float: left;
+            width: 49%;
+        }
+        .search-input {
+            display: block;
+            clear: left;
+        }
+        </style>
+    </head>
+    <body>
+        <div class="print-screen"></div>
+        <fieldset class="origin-data-fieldset">
+            <legend>原始数据</legend>
+            <pre class="origin-data-view"></pre>
+            <p>查看效果: 输入相应对象后按下Enter键. <br> 清空屏幕: Ctrl-L</p>
+        </fieldset>
+        <input type="text" class="search-input" autofocus>
+    </body>
+    <script src="./index.js"></script>
+    <script>
+        // Test data
+        var originData = {
+            normal: 'normal data',
+            normalArr: [1, 2, 3],
+            normalNum: 0,
+            normalStr: 'normal string data',
+            nest: {
+                insideOne: 'inside data one',
+                insideTwo: 'inside data two',
+                insideArr: [1, 2, 3],
+            }
+        };
+        var data1 = CustomObserver(originData);
+        document.querySelector('.origin-data-view').innerText = 'data1 = ' + JSON.stringify(originData, null, 4);
+
+        var keyMap = {
+            enter: 13,
+            clean: 76,
+        };
+        var checkInput = document.querySelector('.search-input');
+        function searchInputData(evt) {
+            var inputVal = evt.target.value;
+            var result = window;
+            inputVal.split('.')
+                .forEach(function(key) {
+                    result = result[key];
+                });
+        }
+
+        function cleanScreen(evt) {
+            document.querySelector('.print-screen').innerHTML = '';
+        }
+
+        checkInput.addEventListener('keyup', function(evt) {
+            if (evt.keyCode === keyMap['enter']) {
+                searchInputData(evt);
+            }
+        });
+
+        document.body.addEventListener('keydown', function(evt) {
+            if (evt.keyCode === keyMap['clean'] && evt.ctrlKey) {
+                evt.preventDefault();
+                cleanScreen(evt);
+            }
+        })
+    </script>
+</html>

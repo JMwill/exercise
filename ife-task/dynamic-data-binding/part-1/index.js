@@ -21,31 +21,35 @@
     function isObj(obj) {
         return Object.prototype.toString.call(obj) === '[object Object]';
     }
+
     function observerProperty(obj, data) {
         Object.keys(data)
             .forEach(function(key) {
                 var val = data[key];
                 Object.defineProperty(obj, key, {
-                    get: function() { printToScreen('你访问了 ' + key); return val; },
+                    enumerable: true,
+                    configurable: true,
+                    get: function() {
+                        printToScreen('你访问了 ' + key); return val;
+                    },
                     set: function(newVal) {
                         if (isObj(newVal)) {
-                            val = Observer(newVal);
+                            val = Object.create(null);
+                            observerProperty(val, newVal);
                         } else {
                             val = newVal;
                         }
-                        printToScreen('你设置了 ' + key + ', 新的值为: ' + val);
+                        printToScreen('你设置了 ' + key + ', 新的值为: ' + JSON.stringify(val));
                     }
                 });
-                if (isObj(data[key])) {
-                    observerProperty(obj[key], data[key]);
-                }
+                if (isObj(data[key])) { observerProperty(obj[key], data[key]); }
             });
     }
     
     /* prototype methods */
     Observer.fn = Observer.prototype;
     Observer.fn.init = function(data) {
-        observerObj = {};
+        observerObj = Object.create(null);
         observerProperty(observerObj, data);
         return observerObj
     };

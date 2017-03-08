@@ -57,13 +57,16 @@
             nest: {
                 insideOne: 'inside data one',
                 insideTwo: 'inside data two',
-                insideArr: [1, 2, 3],
+                // insideArr: [1, 2, 3],
             }
         };
         var data1 = CustomObserver(originData);
-        // data1.$watch('age', function(val) {
-        //     printToScreen('我现在的年纪变了, 现在已经是' + val + '岁了');
-        // });
+        data1.$watch('age', function(val) {
+            printToScreen('我现在的年纪变了, 现在已经是' + val + '岁了');
+        });
+        data1.$watch('nest', function(val) {
+            printToScreen('我的nest发生了变化，可能是insideOne变了，也可能是insideTwo变了。');
+        });
         document.querySelector('.origin-data-view').innerText = 'data1 = ' + JSON.stringify(originData, null, 4);
 
         var keyMap = {

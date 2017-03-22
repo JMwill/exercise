@@ -10,6 +10,11 @@
             <p>姓名：{{user.name}}</p>
             <p>年龄：{{user.age}}</p>
         </div>
+        <fieldset class="change-area">
+            <legend>修改区域</legend>
+            <input style="width: 100%;" type="text" name="changeName" placeholder="修改对象名称">
+            <input style="width: 100%;" type="text" name="changeAge" placeholder="修改对象年龄">
+        </fieldset>
     </body>
     <script src="./observer.js"></script>
     <script src="vue.js"></script>
@@ -19,6 +24,21 @@
             user: {
                 name: 'youngwind',
                 age: 25
+            }
+        }
+    });
+
+    var nameInput = document.querySelector('input[name="changeName"]');
+    var ageInput = document.querySelector('input[name="changeAge"]');
+    var changeArea = document.querySelector('.change-area');
+    changeArea.addEventListener('keyup', function(evt) {
+        if (evt.which === 13) {
+            var val = evt.target.value;
+            console.log(evt.target.name);
+            if (evt.target.name === 'changeName') {
+                app.$data.user.name = val;
+            } else if (evt.target.name = 'changeAge') {
+                app.$data.user.age = val;
             }
         }
     });

@@ -19,7 +19,7 @@
             elem;
         for (var i = 0, l = dataPathArr.length; i < l; i++) {
             elem = dataPathArr[i];
-            if (result[elem]) {
+            if (result[elem] !== undefined) {
                 result = result[elem];
             } else {
                 result = null;

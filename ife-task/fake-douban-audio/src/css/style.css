@@ -1,0 +1,76 @@
+.fdba {
+    display: flex;
+}
+.fdba__lyric,
+.fdba__album {
+    flex: 1 1 25%;
+    text-align: center;
+}
+.fdba__album { }
+.fdba__player {
+    flex: 1 1 50%;
+}
+
+/* Player Info Area */
+.fdba__song-name {
+    font-size: 25px;
+}
+.fdba__singer {
+    font-size: 15px;
+    margin-top: 11px;
+    margin-bottom: 13px;
+}
+/* Song Action Area */
+.fdba_song {
+    /* flex property */
+    display: flex;
+    flex-wrap: wrap;
+}
+.fdba__song-left-side,
+.fdba__song-right-side,
+.fdba__song-progress-bar {
+    width: 30px;
+    transition: width .7s ease-out;
+}
+.fdba__song-left-side,
+.fdba__song-right-side {
+    flex: 1 1 50%;
+}
+.fdba__song-right-side {
+    text-align: right;
+}
+.fdba__song-progress-bar {
+    flex: 1 1 100%;
+    position: relative;
+    height: 5px;
+    margin-top: 8px;
+    margin-bottom: 58px;
+    background-color: #dadada;
+}
+.fdba__song-progress-bar::before {
+    content: '';
+    position: absolute;
+    display: inline-block;
+    height: 100%;
+    width: 10px;
+    background-color: #44b47f;
+}
+
+/* Songs Action Area */
+.fdba__song-act {
+    display: flex;
+    flex-wrap: wrap;
+}
+.fdba__song-act-left-side,
+.fdba__songs-act-right-side {
+    flex: 1 1 50%;
+}
+.fdba__songs-act-right-side {
+    text-align: right;
+}
+.fdba__like-btn,
+.fdba__trash-btn,
+.fdba__play-btn,
+.fdba__next-btn {
+    font-size: 26px;
+}

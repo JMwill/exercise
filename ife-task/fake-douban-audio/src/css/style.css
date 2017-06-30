@@ -1,3 +1,4 @@
+@import './keyframes.css';
 .fdba {
     display: flex;
 }
@@ -6,9 +7,24 @@
     flex: 1 1 25%;
     text-align: center;
 }
-.fdba__album { }
+.fdba__album-wrapper {
+    width: 200px;
+    height: 200px;
+    border-radius: 100px;;
+    overflow: hidden;
+}
+.fdba__album-img {
+    min-width: 200px;
+    min-height: 200px;
+}
+.fdba__album-wrapper.fdba__rotate {
+    animation: rotate 10s linear 0s infinite;
+}
+
+/************Player***********/
 .fdba__player {
     flex: 1 1 50%;
+    padding: 0 10px;
 }
 
 /* Player Info Area */

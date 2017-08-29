@@ -1,34 +1,26 @@
 let menuData = [
     {
-        name: 'menu1',
-        value: 'menu 1',
+        name: 'menu 1',
+        act: {
+            click: function() {
+                console.log(this.name);
+            },
+        },
     },
     {
-        name: 'menu2',
-        value: 'menu 2',
+        name: 'menu 2',
+        act: {
+            click: function() {
+                console.log(this.name);
+            },
+        },
     },
     {
-        name: 'menu3',
-        value: 'menu 3',
-        subMenu: [
-            {
-                name: 'menu3-1',
-                value: 'menu 3-1',
+        name: 'menu 3',
+        act: {
+            click: function() {
+                console.log(this.name);
             },
-            {
-                name: 'menu3-2',
-                value: 'menu 3-2',
-            },
-            {
-                name: 'menu3-3',
-                value: 'menu 3-3',
-                subMenu: [
-                    {
-                        name: 'menu3-1-1',
-                        value: 'menu 3-1-1',
-                    },
-                ],
-            },
-        ],
+        },
     },
 ];

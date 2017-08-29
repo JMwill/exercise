@@ -7,15 +7,27 @@
 (function(global, utils) {
     global.utils = utils;
 }(window, function() {
-    utils = {};
-    utils.isArray = function(a) {
-        return Array.isArray ?
-            Array.isArray(a) :
-            Object.prototype
-                    .toString
-                    .call(a)
-                    .slice(8)
-                    .toLowerCase() === 'array';
-    }
+    utils = {
+        isArray: function(a) {
+            return Array.isArray ?
+                Array.isArray(a) :
+                Object.prototype
+                        .toString
+                        .call(a)
+                        .slice(8)
+                        .toLowerCase() === 'array';
+        },
+        parser: (function() {
+            let domParser = document.createElement('div');
+            return function(tmpl) {
+                try {
+                    domParser.innerHTML = tmpl;
+                    return domParser.firstElementChild;
+                } catch(err) {
+                    console.error(err);
+                }
+            };
+        }()),
+    };
     return utils;
-}));
+}()));

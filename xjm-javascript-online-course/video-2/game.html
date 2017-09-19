@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title></title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        canvas {
+            border: 1px solid black;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="id-canvas" width="400" height="300"></canvas>
+    <script>
+        var log = console.log.bind(console)
+    </script>
+    <script>
+        var imageFromPath = function (path) {
+            var img = new Image()
+            img.src = path
+            return img
+        }
+
+        var WillGame = function () {
+            var g = {
+                actions: {},
+                keydowns: {},
+            }
+            var canvas = document.getElementById('id-canvas')
+            var context = canvas.getContext('2d')
+
+            g.context = context
+            g.canvas = canvas
+
+            // draw
+            g.drawImage = function (gImage) {
+                g.context.drawImage(gImage.image, gImage.x, gImage.y)
+            }
+
+            window.addEventListener('keydown', function (e) {
+                g.keydowns[e.key] = true
+            })
+
+            window.addEventListener('keyup', function (e) {
+                g.keydowns[e.key] = false
+            })
+
+            g.registerAction = function (key, cb) {
+                g.actions[key] = cb
+            }
+
+            setInterval(function () {
+                // events
+                var actions = Object.keys(g.actions)
+                for (var i = 0; i < actions.length; i++) {
+                    var key = actions[i]
+                    if (g.keydowns[key]) {
+                        g.actions[key]()
+                    }
+                }
+                // clear
+                context.clearRect(0, 0, g.canvas.width, g.canvas.height)
+
+                // update
+                g.update()
+
+                // draw
+                g.draw()
+            }, 1000 / 30)
+
+            return g
+        }
+        var Paddle = function () {
+            var image = imageFromPath('paddle.png')
+            var o = {
+                image: image,
+                x: 110,
+                y: 250,
+                speed: 5,
+            }
+
+            o.moveLeft = function () {
+                o.x -= o.speed
+            }
+            o.moveRight = function () {
+                o.x += o.speed
+            }
+            o.collide = function(ball) {
+                // Lin 实现
+                var oa = ball
+                var ob = o
+
+                //if(Math.abs(ob.x+ob.image.width-oa.x)<=(oa.image.width+ob.image.width)&&Math.abs(ob.y-(oa.y+oa.image.height))<=(oa.image.height+ob.image.height))
+                //    return true;
+                //if(Math.abs(oa.x+oa.image.width-ob.x)<=(oa.image.width+ob.image.width)&&Math.abs(oa.y-(ob.y+ob.image.height))<=(oa.image.height+ob.image.height))
+                //    return true;
+                //if(Math.abs(ob.x+ob.image.width-oa.x)<=(oa.image.width+ob.image.width)&&Math.abs(oa.y-(ob.y+ob.image.height))<=(oa.image.height+ob.image.height))
+                //    return true;
+                //if(Math.abs(oa.x+oa.image.width-ob.x)<=(oa.image.width+ob.image.width)&&Math.abs(ob.y-(oa.y+oa.image.height))<=(oa.image.height+ob.image.height))
+                //    return true;
+                //return false;
+
+                if(((oa.x>=ob.x-ob.image.width/2)&&(ob.x-ob.image.width/2<=oa.x-oa.image.width/2)) && ((oa.y>=ob.y-ob.image.height/2)&&(ob.y-ob.image.height/2<=oa.y-oa.image.height/2)))
+                    return true;
+                if(((oa.x<=ob.x)&&(ob.x<=oa.x+oa.image.width)) && ((oa.y<=ob.y+ob.image.height)&&(ob.y+ob.image.height<=oa.y+oa.image.height)))
+                    return true;
+                return false;
+
+                // 原有实现
+                // if (ball.y + ball.image.height > o.y) {
+                //     if (ball.x > o.x && ball.x < o.x + o.image.width) {
+                //         return true
+                //     }
+                // }
+                // return false
+
+                // Will 实现
+                // var overlapY = false
+                // var overlapX = false
+
+                // var bw = ball.image.width
+                // var bh = ball.image.height
+                // var bx = ball.x
+                // var by = ball.y
+
+                // var pw = o.image.width
+                // var ph = o.image.height
+                // var px = o.x
+                // var py = o.y
+
+                // if (bx < px && by < py) {
+                //     // ball on left top
+                //     if (px - bx < bw) { overlapX = true }
+                //     if (py - by < bh) { overlapY = true }
+                // } else if (bx < px && by > py) {
+                //     // ball on left bottom
+                //     if (px - bx < bw) { overlapX = true }
+                //     if (by - py < ph) { overlapY = true }
+                // } else if (bx > px && by < py) {
+                //     // ball on right top
+                //     if (bx - px < pw) { overlapX = true }
+                //     if (py - by < bh) { overlapY = true }
+                // } else if (bx > px && by > py) {
+                //     // ball on right bottom
+                //     if (bx - px < pw) { overlapX = true }
+                //     if (py - by < ph) { overlapY = true }
+                // }
+
+                // return overlapX && overlapY
+
+                // Will 实现二
+                // var maxX = Math.max(o.x + o.image.width, ball.x + ball.image.width)
+                // var minX = Math.min(o.x, ball.x)
+                // var mixinWidth =  maxX - minX
+
+                // var maxY = Math.max(o.y + o.image.height, ball.y + ball.image.height)
+                // var minY = Math.min(o.y, ball.y)
+                // var mixinHeight = maxY - minY
+
+                // var overlapX = mixinWidth <= o.image.width + ball.image.width
+                // var overlapY = mixinHeight <= o.image.height + ball.image.height
+
+                // return overlapX && overlapY
+            }
+
+            return o
+        }
+
+        var Ball = function () {
+            var image = imageFromPath('ball.png')
+            var o = {
+                image: image,
+                x: 99,
+                y: 170,
+                speedX: 10,
+                speedY: 10,
+                fired: false,
+            }
+
+            o.fire = function() {
+                o.fired = true
+            }
+
+            o.move = function() {
+                if (!o.fired) {
+                    return
+                }
+
+                if (o.x <= 0 || o.x + o.image.width >= 400) {
+                    o.speedX *= -1
+                    o.x = o.x <= 0 ? 0 : 400 - o.image.width
+                }
+
+                if (o.y <= 0 || o.y + o.image.height >= 300) {
+                    o.speedY *= -1
+                    o.y = o.y <= 0 ? 0 : 300 - o.image.height
+                }
+
+                o.y += o.speedY
+                o.x += o.speedX;
+            }
+
+            return o
+        }
+
+        var __main = function () {
+            var paddle = Paddle()
+            var game = WillGame()
+            var ball = Ball()
+
+            game.registerAction('a', function () {
+                paddle.moveLeft()
+            })
+            game.registerAction('d', function () {
+                paddle.moveRight()
+            })
+            game.registerAction('f', function () {
+                ball.fire()
+            })
+
+            game.update = function () {
+                if (paddle.collide(ball)) {
+                    ball.speedY *= -1
+                }
+                ball.move()
+            }
+
+            game.draw = function () {
+                game.drawImage(paddle)
+                game.drawImage(ball)
+            }
+        }
+
+        __main()
+    </script>
+</body>
+
+</html>

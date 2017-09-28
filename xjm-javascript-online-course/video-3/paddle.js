@@ -1,11 +1,15 @@
-var Paddle = function () {
-    var image = imageFromPath('paddle.png')
-    var o = {
-        image: image,
-        x: 110,
-        y: 250,
-        speed: 5,
-    }
+var Paddle = function (game) {
+    // var image = imageFromPath('paddle.png')
+    // var o = {
+    //     image: image,
+    //     x: 110,
+    //     y: 250,
+    //     speed: 5,
+    // }
+    var o = game.imageByName('paddle')
+    o.x = 110
+    o.y = 250
+    o.speed = 5
 
     o.move = function(x) {
         if (x < 0) {

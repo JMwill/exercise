@@ -1,8 +1,9 @@
-var WillGame = function () {
+var WillGame = function (images, runCallback) {
     window.fps = 30
     var g = {
         actions: {},
         keydowns: {},
+        images: {},
     }
     var canvas = document.getElementById('id-canvas')
     var context = canvas.getContext('2d')
@@ -49,9 +50,38 @@ var WillGame = function () {
         }, 1000/fps)
     }
 
-    setTimeout(function() {
-        runloop()
-    }, 1000/fps)
+    var loads = []
+    var names = Object.keys(images)
+    for (var i = 0; i < names.length; i++) {
+        let name = names[i]
+        let path = images[name]
+        let img = new Image()
+        img.src = path
+        img.onload = function() {
+            g.images[name] = img
+            loads.push(1)
+            if (loads.length === names.length) {
+                g.run()
+            }
+        }
+    }
+
+    g.imageByName = function(name) {
+        var img = g.images[name]
+        var image = {
+            w: img.width,
+            h: img.height,
+            image: img,
+        }
+        return image
+    }
+
+    g.run = function() {
+        runCallback(g)
+        setTimeout(function() {
+            runloop()
+        }, 1000/fps)
+    }
 
     return g
 }

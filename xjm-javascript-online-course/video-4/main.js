@@ -70,6 +70,9 @@ var __main = function () {
         }
 
         game.draw = function () {
+            game.context.fillStyle = '#554'
+            game.context.fillRect(0, 0, 400, 300)
+
             game.drawImage(paddle)
             game.drawImage(ball)
 
@@ -80,6 +83,28 @@ var __main = function () {
             }
             game.context.fillText('分数：' + score, 10, 290)
         }
+        var enableDrag = false
+        game.canvas.addEventListener('mousedown', function(evt) {
+            var x = evt.offsetX
+            var y = evt.offsetY
+
+            if (ball.hasPoint(x, y)) {
+                enableDrag = true
+            }
+        })
+        game.canvas.addEventListener('mousemove', function(evt) {
+            var x = evt.offsetX
+            var y = evt.offsetY
+            if (enableDrag) {
+                ball.x = x
+                ball.y = y
+            }
+        })
+        game.canvas.addEventListener('mouseup', function(evt) {
+            var x = evt.offsetX
+            var y = evt.offsetY
+            enableDrag = false
+        })
     })
 }
 

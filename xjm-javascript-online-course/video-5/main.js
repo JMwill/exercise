@@ -30,7 +30,6 @@ var enableDebugMode = function (game, enable) {
 }
 
 var pause = false
-var blocks = []
 var __main = function () {
     var images = {
         ball: 'ball.png',
@@ -38,73 +37,21 @@ var __main = function () {
         paddle: 'paddle.png',
     }
     var game = WillGame(images, function(g) {
-        var paddle = Paddle(game)
-        var ball = Ball(game)
-        var score = 0
-
-
-        game.registerAction('a', function () {
-            paddle.moveLeft()
-        })
-        game.registerAction('d', function () {
-            paddle.moveRight()
-        })
-        game.registerAction('f', function () {
-            ball.fire()
-        })
         enableDebugMode(game, true)
+        var scene = Scene()
 
         game.update = function () {
-            if (pause) { return }
-            if (paddle.collide(ball)) {
-                ball.speedY *= -1
-            }
-            for (var i = 0; i < blocks.length; i++) {
-                if (blocks[i].collide(ball)) {
-                    blocks[i].kill()
-                    ball.bounce()
-                    score += 100
-                }
-            }
-            ball.move()
+            if (paused) { return }
+
+            // s.update
+            scene.update()
         }
 
         game.draw = function () {
-            game.context.fillStyle = '#554'
-            game.context.fillRect(0, 0, 400, 300)
 
-            game.drawImage(paddle)
-            game.drawImage(ball)
-
-            for (var i = 0; i < blocks.length; i++) {
-                if (blocks[i].alive) {
-                    game.drawImage(blocks[i])
-                }
-            }
-            game.context.fillText('分数：' + score, 10, 290)
+            // s.draw
+            scene.draw()
         }
-        var enableDrag = false
-        game.canvas.addEventListener('mousedown', function(evt) {
-            var x = evt.offsetX
-            var y = evt.offsetY
-
-            if (ball.hasPoint(x, y)) {
-                enableDrag = true
-            }
-        })
-        game.canvas.addEventListener('mousemove', function(evt) {
-            var x = evt.offsetX
-            var y = evt.offsetY
-            if (enableDrag) {
-                ball.x = x
-                ball.y = y
-            }
-        })
-        game.canvas.addEventListener('mouseup', function(evt) {
-            var x = evt.offsetX
-            var y = evt.offsetY
-            enableDrag = false
-        })
     })
 }
 

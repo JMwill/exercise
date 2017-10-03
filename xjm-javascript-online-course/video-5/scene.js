@@ -6,9 +6,9 @@ var Scene = function (game) {
     var ball = Ball(game)
     var score = 0
 
-    var blocks = loadLevel(game, 1)
+    blocks = loadLevel(game, 1)
 
-    var paused = false
+    paused = false
     game.registerAction('a', function () {
         paddle.moveLeft()
     })
@@ -39,8 +39,16 @@ var Scene = function (game) {
         game.context.fillText('分数：' + score, 10, 290)
     }
 
-    s.pdate = function() {
+    s.update = function() {
+        if (paused) { return }
+
         ball.move()
+
+        if (ball.y > paddle.y) {
+            var end = SceneEnd(game)
+            game.replaceScene(end)
+            return
+        }
 
         if (paddle.collide(ball)) {
             ball.bounce()

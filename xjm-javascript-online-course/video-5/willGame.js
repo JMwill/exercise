@@ -1,6 +1,7 @@
 var WillGame = function (images, runCallback) {
     window.fps = 30
     var g = {
+        scene: null,
         actions: {},
         keydowns: {},
         images: {},
@@ -10,6 +11,16 @@ var WillGame = function (images, runCallback) {
 
     g.context = context
     g.canvas = canvas
+
+    // update
+    g.update = function() {
+        g.scene.update()
+    }
+
+    // draw
+    g.draw = function() {
+        g.scene.draw()
+    }
 
     // draw
     g.drawImage = function (gImage) {
@@ -76,11 +87,19 @@ var WillGame = function (images, runCallback) {
         return image
     }
 
-    g.run = function() {
-        runCallback(g)
+    g.runWithScene = function(scene) {
+        g.scene = scene
         setTimeout(function() {
             runloop()
         }, 1000/fps)
+    }
+
+    g.replaceScene = function(scene) {
+        g.scene = scene
+    }
+
+    g.run = function(scene) {
+        runCallback(g)
     }
 
     return g

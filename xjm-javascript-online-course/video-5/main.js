@@ -16,7 +16,7 @@ var enableDebugMode = function (game, enable) {
     window.addEventListener('keyup', function(e) {
         var k = e.key
         if (k === 'p') {
-            pause = !pause
+            paused = !paused
         } else if ('1234567'.includes(k)) {
             blocks = loadLevel(game, Number(k))
         }
@@ -29,30 +29,19 @@ var enableDebugMode = function (game, enable) {
         })
 }
 
-var pause = false
 var __main = function () {
     var images = {
         ball: 'ball.png',
         block: 'block.png',
         paddle: 'paddle.png',
     }
-    var game = WillGame(images, function(g) {
-        enableDebugMode(game, true)
-        var scene = Scene()
-
-        game.update = function () {
-            if (paused) { return }
-
-            // s.update
-            scene.update()
-        }
-
-        game.draw = function () {
-
-            // s.draw
-            scene.draw()
-        }
+    var game = WillGame(images, function(game) {
+        var s = Scene(game)
+        game.runWithScene(s)
+        // var scene = Scene(game)
     })
+
+    enableDebugMode(game, true)
 }
 
 __main()

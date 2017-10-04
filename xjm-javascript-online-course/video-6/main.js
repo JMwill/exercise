@@ -36,7 +36,7 @@ var __main = function () {
         paddle: 'img/paddle.png',
     }
     var game = WillGame(images, function(game) {
-        var s = Scene(game)
+        var s = SceneTitle(game)
         game.runWithScene(s)
         // var scene = Scene(game)
     })

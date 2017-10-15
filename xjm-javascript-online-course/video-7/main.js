@@ -1,13 +1,13 @@
-var loadLevel = function (game, n) {
-    var level = levels[n - 1]
-    var blocks = []
-    for (var i = 0; i < level.length; i++) {
-        var p = level[i]
-        var b = Block(game, p)
-        blocks.push(b)
-    }
-    return blocks
-}
+// var loadLevel = function (game, n) {
+//     var level = levels[n - 1]
+//     var blocks = []
+//     for (var i = 0; i < level.length; i++) {
+//         var p = level[i]
+//         var b = Block(game, p)
+//         blocks.push(b)
+//     }
+//     return blocks
+// }
 
 var enableDebugMode = function (game, enable) {
     if (!enable) {
@@ -18,7 +18,7 @@ var enableDebugMode = function (game, enable) {
         if (k === 'p') {
             paused = !paused
         } else if ('1234567'.includes(k)) {
-            blocks = loadLevel(game, Number(k))
+            // blocks = loadLevel(game, Number(k))
         }
     })
 
@@ -31,12 +31,13 @@ var enableDebugMode = function (game, enable) {
 
 var __main = function () {
     var images = {
-        ball: 'img/ball.png',
-        block: 'img/block.png',
-        paddle: 'img/paddle.png',
+        bullet: 'img/bullet.png',
+        cloud: 'img/cloud.png',
+        player: 'img/player.png',
+        sky: 'img/sky.jpeg',
     }
     var game = WillGame.instance(30, images, function(game) {
-        var s = SceneTitle.new(game)
+        var s = Scene.new(game)
         game.runWithScene(s)
         // var scene = Scene(game)
     })

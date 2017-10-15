@@ -30,7 +30,7 @@ class WillGame {
     }
 
     drawImage(img) {
-        this.context.drawImage(img.image, img.x, img.y)
+        this.context.drawImage(img.texture, img.x, img.y)
     }
 
     // update
@@ -87,14 +87,14 @@ class WillGame {
         }
     }
 
-    imageByName(name) {
+    textureByName(name) {
         var img = this.images[name]
-        var image = {
-            w: img.width,
-            h: img.height,
-            image: img,
-        }
-        return image
+        // var image = {
+        //     w: img.width,
+        //     h: img.height,
+        //     image: img,
+        // }
+        return img
     }
 
 

@@ -43,6 +43,40 @@ var lengthOfLongestSubstring = function(s) {
   return longest
 };
 
-console.log(lengthOfLongestSubstring(process.argv[2]))
-console.log(lengthOfLongestSubstring(process.argv[2]))
-console.log(lengthOfLongestSubstring(process.argv[2]))
+// 方法二，优化点：在出现重复的字符时，可以直接将 i 设置为 [i, j) 内的重复字符 j' 的位置
+// 这样可以略过 i 到 j' 中的所有字符，减少比较次数
+/**
+ * @param {string} s
+ * @return {number}
+ */
+var lengthOfLongestSubstring = function(s) {
+  let charMap = {}
+
+  let i = j = 0;
+  let longest = 0
+  let tmpI
+  let newI
+
+  for (;j < s.length; j++) {
+    if (charMap[s[j]] !== undefined) {
+      i = Math.max(i, charMap[s[j]])
+    }
+    longest = Math.max(longest, j - i + 1)
+
+    // 下一次遇到 s[j] 的时候，i 应该是在 j + 1 的位置，所以这里设了
+    charMap[s[j]] = j + 1
+  }
+
+  return longest
+};
+
+
+console.assert(lengthOfLongestSubstring('aleiivuuxszpaqojv') === 10, 'aleiivuuxszpaqojv error')
+console.assert(lengthOfLongestSubstring('eeydgwdykpv') === 7, 'eeydgwdykpv error')
+console.assert(lengthOfLongestSubstring('aab') === 2, 'aab error')
+console.assert(lengthOfLongestSubstring('tmmzuxt') === 5, 'tmmzuxt error')
+console.assert(lengthOfLongestSubstring('abcabcbb') === 3, 'abcabcbb error')
+console.assert(lengthOfLongestSubstring('bbbbbbb') === 1, 'bbbbbbb error')
+console.assert(lengthOfLongestSubstring('pwwkew') === 3, 'pwwkew error')
+console.assert(lengthOfLongestSubstring('i') === 1, 'i error')
+console.assert(lengthOfLongestSubstring('') === 0, 'empty string error')

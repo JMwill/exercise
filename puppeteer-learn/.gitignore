@@ -1,0 +1,4 @@
+node_modules/
+built/
+assets/*
+!assets/.gitkeep

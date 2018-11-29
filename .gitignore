@@ -41,3 +41,6 @@ jspm_packages
 
 # Ignore algs4 test data folder
 algs4-data
+
+# build/dist folder
+dist

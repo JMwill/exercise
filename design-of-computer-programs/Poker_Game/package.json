@@ -1,0 +1,22 @@
+{
+  "name": "poker-game",
+  "version": "1.0.0",
+  "description": "simple poker game",
+  "main": "app.js",
+  "scripts": {
+    "test": "mocha && node percentageTest.js"
+  },
+  "keywords": [
+    "game",
+    "javascript"
+  ],
+  "author": "will",
+  "license": "MIT",
+  "dependencies": {
+    "underscore": "^1.8.3"
+  },
+  "devDependencies": {
+    "mocha": "^2.3.4",
+    "should": "^8.1.1"
+  }
+}

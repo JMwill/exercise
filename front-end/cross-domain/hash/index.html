@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>HASH INDEX</title>
+  <style>
+    [class^=index-] {
+      min-height: 2em;
+      background-color: #fffc8a;
+      padding: .5em 1em;
+    }
+    [class^=index-]:empty::before {
+      content: 'Empty ' attr(class);
+      color: #ccc;
+    }
+  </style>
+</head>
+<body>
+  <h3>Hash result!</h3>
+  <p class="cross-domain-iframe"></p>
+  <iframe
+    src="http://localhost:4000#chtmlmessage"
+    frameborder="0"
+    class="iframe">
+  </iframe>
+  <script>
+    const content = document.querySelector('.cross-domain-iframe')
+    window.addEventListener('hashchange', () => {
+      content.textContent = decodeURIComponent(location.hash.slice(1))
+    })
+  </script>
+</body>
+</html>

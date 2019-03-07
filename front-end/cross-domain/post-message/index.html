@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>POST MESSAGE INDEX</title>
+  <style>
+    [class^=post-message-] {
+      min-height: 2em;
+      background-color: #fffc8a;
+      padding: .5em 1em;
+    }
+    [class^=post-message-]:empty::before {
+      content: 'Empty ' attr(class);
+      color: #ccc;
+    }
+  </style>
+</head>
+<body>
+  <h3>Post Message result!</h3>
+  <p class="post-message-iframe"></p>
+  <iframe
+    src="http://localhost:4000"
+    frameborder="0"
+    class="iframe"
+    onload="postMessage()">
+  </iframe>
+  <script>
+    const elem = document.querySelector('.post-message-iframe')
+    const frame = document.querySelector('.iframe')
+    window.addEventListener('message', e => {
+      console.log(e)
+      if (e.origin !== location.origin) elem.textContent = e.data
+    })
+    function postMessage() {
+      frame.contentWindow.postMessage('Test', 'http://localhost:4000')
+    }
+  </script>
+</body>
+</html>

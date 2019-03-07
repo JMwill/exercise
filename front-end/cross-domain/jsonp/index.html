@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Jsonp</title>
+  <style>
+    [class^=json] {
+      min-height: 2em;
+      background-color: #fffc8a;
+      padding: .5em 1em;
+    }
+    [class^=json]:empty::before {
+      content: 'Empty ' attr(class);
+      color: #ccc;
+    }
+  </style>
+</head>
+<body>
+  <h3>If cross domain, then the result of next line is empty !</h3>
+  <p class="json-result"></p>
+  <p>You can get jsonp result by this <button class="btn-jsonp">click me!</button></p>
+  <p class="jsonp-result"></p>
+  <script>
+    const json = document.querySelector('.json-result')
+    const req = new Request('http://localhost:3000/json')
+    fetch(req).then(res => {
+      if (!res.ok) throw new Error(`HTTP error, status = ${res.status}`)
+      return res.json()
+    }).then(result => {
+      json.textContent = result
+    }).catch(err => console.error(err))
+  </script>
+
+  <script>
+    let clickTimes = 0
+    const btn = document.querySelector('.btn-jsonp')
+    btn.addEventListener('click', () => {
+      const script = document.createElement('script')
+      const jsonp = document.querySelector('.jsonp-result')
+      let _cb
+      if (window.cb) _cb = window.cb
+      window.cb = cb
+      function cb(result) {
+        jsonp.textContent = `fetch ${clickTimes} times: ${JSON.stringify(result)}`
+        clickTimes++
+        script.parentNode.removeChild(script)
+        if (_cb) window.cb = _cb
+        else delete window.cb
+      }
+
+      script.src = 'http://localhost:3000/jsonp?callback=cb'
+      script.type = 'text/javascript'
+      document.head.appendChild(script)
+    })
+  </script>
+</body>
+</html>

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>CORS</title>
+  <style>
+    [class^=cors-] {
+      min-height: 2em;
+      background-color: #fffc8a;
+      padding: .5em 1em;
+    }
+    [class^=cors-]:empty::before {
+      content: 'Empty ' attr(class);
+      color: #ccc;
+    }
+  </style>
+</head>
+<body>
+  <h3>Without cors result, If cross domain, then the result is empty !</h3>
+  <p class="cors-result-without"></p>
+  <p>With cors result, the result is not empty !</p>
+  <p class="cors-result"></p>
+  <script>
+    const corsWithout = document.querySelector('.cors-result-without')
+    const req = new Request('http://localhost:4000/cors-without')
+    fetch(req).then(res => {
+      if (!res.ok) throw new Error(`HTTP error, status = ${res.status}`)
+      return res.json()
+    }).then(result => {
+      corsWithout.textContent = result
+    }).catch(console.error)
+
+    const cors = document.querySelector('.cors-result')
+    const corsReq = new Request('http://localhost:4000/cors')
+    fetch(corsReq).then(res => {
+      if (!res.ok) throw new Error(`HTTP error, status = ${res.status}`)
+      return res.json()
+    }).then(result => {
+      cors.textContent = JSON.stringify(result)
+    }).catch(console.error)
+  </script>
+</body>
+</html>

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <script>
+    function checkChilds(root, stack, store) {
+      const children = root.children;
+      if (!children.length) {
+        if (stack.length > store.depth) {
+          store.elm = root;
+          store.depth = stack.length;
+        }
+      } else {
+        for (let i = 0; i < children.length; i++) {
+          stack.push(children[i]);
+          checkChilds(children[i], stack, store)
+          stack.pop();
+        }
+      }
+    }
+
+    function findDeepestElm() {
+      const root = document.getRootNode();
+      const stack = [];
+      let store = {
+        depth: 0,
+        elm: null,
+      };
+      checkChilds(root, stack, store);
+      return store.elm;
+    }
+
+    console.log(findDeepestElm())
+  </script>
+</body>
+</html>

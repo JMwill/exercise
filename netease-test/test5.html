@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <script>
+    var str = '您好，<%=name%>。欢迎来到<%=location%>';
+    function template(str) {
+      const argRegexp = /<%=([^=]+)%>/g;
+      const args = Array.from(str.matchAll(argRegexp));
+      return function(data) {
+        args.forEach(item => {
+          const name = item[1];
+          str = str.replace(`<%=${name}%>`, data[name])
+        })
+        return str;
+      }
+    }
+    var compiled = template(str);
+    // complied的输出值为：'您好，张三。欢迎来到网易游戏'
+    console.log(compiled({name: '张三', location: '网易游戏'}));
+  </script>
+</body>
+</html>

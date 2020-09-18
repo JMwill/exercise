@@ -1,0 +1,84 @@
+html {
+  min-height: 100%;
+  min-width: 100%;
+}
+body {
+  background: center / cover no-repeat url('../img/一页背景.png');
+  min-width: 100%;
+  min-height: 100%;
+}
+.common-header {
+  display: flex;
+  min-height: 30px;
+  margin: 43px 0 0 85px;
+}
+.common-logo {
+  width: 135px;
+  height: 30px;
+  float: left;
+}
+.common-menu {
+  display: flex;
+  justify-content: flex-end;
+  flex-grow: 1;
+  padding-right: 80px;
+  line-height: 30px;
+}
+.common-menu__content {
+  display: flex;
+  flex-grow: 1;
+  padding: 0;
+  margin: 0;
+  font-size: 18px;
+  max-width: 470px;
+  flex-direction: row;
+  text-align: center;
+}
+.common-menu__item {
+  flex: 6 6 2em;
+  display: inline-block;
+  position: relative;
+  list-style-type: none;
+}
+.common-menu__item>a {
+  color: white;
+  text-decoration: none;
+}
+.common-menu__item_active>a {
+  color: red;
+}
+.common-menu__item_active::after {
+  content: '';
+  display: inline-block;
+  position: absolute;
+  bottom: -20px;
+  height: 5px;
+  background-color: red;
+  width: 2em;
+  left: 50%;
+  margin-left: -1em;
+}
+.common-menu__handler {
+  cursor: pointer;
+  flex-shrink: 0;
+  display: inline-block;
+  position: relative;
+  background-color: white;
+  width: 25px;
+  height: 5px;
+  margin: 12px 0 12px 5px;
+}
+.common-menu__handler::before,
+.common-menu__handler::after {
+  content: '';
+  width: 100%;
+  height: 5px;
+  background: white;
+  position: absolute;
+}
+.common-menu__handler::before {
+  top: -12px;
+}
+.common-menu__handler::after {
+  bottom: -12px;
+}

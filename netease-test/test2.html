@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <script>
+    // 解决办法一，使用语言自带方法
+    function findKMax(arr, k) {
+      const setArr = Array.from(new Set(arr));
+      return setArr.sort()[setArr.length - k];
+    }
+    console.log(findKMax([3,5,6,7,2,4,7,3], 3));
+  </script>
+
+  <script>
+    // 解决办法二，去重后，再用堆排序的办法，做 K 次排序
+    function swap(arr, i, j) {
+      const tmp = arr[i];
+      arr[i] = arr[j];
+      arr[j] = tmp;
+    }
+
+    function findKMax(arr, k) {
+      let result = null;
+      arr = Array.from(new Set(arr));
+      while(k > 0) {
+        const length = arr.length;
+        const times = Math.floor(length / 2);
+        for (let i = times; i > 0; i--) {
+          const left = (i * 2) - 1;
+          const right =i * 2;
+          const parent = i - 1;
+          if (arr[left] && arr[parent] && (arr[left] > arr[parent])) {
+            swap(arr, left, parent);
+          }
+          if (arr[right] && arr[parent] && arr[right] > arr[parent]) {
+            swap(arr, right, parent)
+          }
+        }
+        result = arr.shift();
+        k--;
+      }
+      return result;
+    }
+    console.log(findKMax([3,5,6,7,2,4,7,3], 3));
+  </script>
+</body>
+</html>

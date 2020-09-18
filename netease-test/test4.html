@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <script>
+    function sum() {
+      const args = Array.from(arguments);
+      if (arguments.length > 1) {
+        return args.reduce((count, i) => count + i, 0);
+      } else {
+        return function() {
+          return sum.apply(null, args.concat(Array.from(arguments)));
+        }
+      }
+    }
+    console.log(sum(1, 2));
+    console.log(sum(1)(2));
+  </script>
+</body>
+</html>

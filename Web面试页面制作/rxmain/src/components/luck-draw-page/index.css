@@ -1,0 +1,109 @@
+.c-luck-draw {
+  max-width: 820px;
+  margin: 120px auto 0px;
+  padding: 0 20px;
+}
+.c-luck-draw__header {
+  color: #891a13;
+  line-height: 1;
+  font-size: 40px;
+  font-weight: bold;
+}
+.c-luck-draw__header-small-word {
+  font-size: 20px;
+  font-weight: normal;
+}
+.c-luck-draw__drawer {
+  margin-top: 18px;
+  padding: 20px;
+  background-color: #000;
+}
+.c-luck-draw__prize-cnt {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.c-luck-draw__prize {
+  flex-grow: 1;
+  flex-shrink: 1;
+  flex-basis: 170px;
+  box-sizing: border-box;
+  height: 95px;
+  margin: 10px;
+  background: center / contain no-repeat;
+}
+.c-luck-draw__prize_active {
+  box-shadow: rgb(255, 0, 0) 0px 0px 0px 5px inset;
+}
+.c-luck-draw__trigger {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-grow: 2;
+  flex-shrink: 1;
+  flex-basis: 340px;
+  height: 95px;
+  margin: 20px;
+  cursor: pointer;
+  order: 2;
+}
+.c-luck-draw__trigger-btn {
+  width: 75%;
+  height: 64px;
+  background: center / contain no-repeat url('../../img/摇奖按钮.png');
+}
+.c-luck-draw__trigger-btn:hover {
+  background: center / contain no-repeat url('../../img/摇奖按钮高亮.png');
+}
+.c-luck-draw__trigger-btn:active {
+  background: center / contain no-repeat url('../../img/摇奖按钮按下.png');
+}
+
+@media (max-width: 760px) {
+  .c-luck-draw__prize {
+    height: 72px;
+    margin: 5px;
+  }
+  .c-luck-draw__prize_active {
+    box-shadow: rgb(255, 0, 0) 0px 0px 0px 3px inset;
+  }
+  .c-luck-draw__trigger {
+    height: 72px;
+    margin: 10px;
+  }
+  .c-luck-draw__trigger-btn {
+    height: 48px;
+  }
+}
+@media (max-width: 520px) {
+  .c-luck-draw__prize {
+    height: 50px;
+    margin: 5px;
+  }
+  .c-luck-draw__prize_active {
+    box-shadow: rgb(255, 0, 0) 0px 0px 0px 3px inset;
+  }
+  .c-luck-draw__trigger {
+    height: 50px;
+    margin: 10px;
+  }
+  .c-luck-draw__trigger-btn {
+    height: 36px;
+  }
+}
+@media (max-width: 380px) {
+  .c-luck-draw__prize {
+    height: 36px;
+    margin: 3px;
+  }
+  .c-luck-draw__prize_active {
+    box-shadow: rgb(255, 0, 0) 0px 0px 0px 3px inset;
+  }
+  .c-luck-draw__trigger {
+    height: 36px;
+    margin: 6px;
+  }
+  .c-luck-draw__trigger-btn {
+    height: 24px;
+  }
+}

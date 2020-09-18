@@ -1,0 +1,136 @@
+.main-page {
+  display: flex;
+  max-width: 1180px;
+  margin: 150px auto 0;
+  padding: 0 20px;
+  align-items: center;
+  box-sizing: border-box;
+}
+/* Carousel */
+.c-carousel {
+  position: relative;
+  overflow: hidden;
+  max-width: 680px;
+}
+.c-carousel__list {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  transition: transform 1s ease;
+}
+.c-carousel__item {
+  width: 100%;
+}
+.c-carousel__arrow {
+  position: absolute;
+  width: 30px;
+  height: 46px;
+  top: 50%;
+  margin-top: -23px;
+  cursor: pointer;
+  z-index: 1;
+}
+.c-carousel__arrow-l {
+  left: 12px;
+  background: center / contain no-repeat url(../../img/左按钮.png);
+}
+.c-carousel__arrow-l:hover {
+  background: center / contain no-repeat url(../../img/左按钮亮.png);
+}
+.c-carousel__arrow-r {
+  right: 12px;
+  background: center / contain no-repeat url(../../img/右按钮.png);
+}
+.c-carousel__arrow-r:hover {
+  background: center / contain no-repeat url(../../img/右按钮亮.png);
+}
+.c-carousel__indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.c-carousel__indicator-dot {
+  position: relative;
+  width: 10px;
+  height: 10px;
+  border-radius: 10px;
+  margin: -20px 4px 0;
+  cursor: pointer;
+  background-color: #000;
+}
+.c-carousel__indicator-dot_active {
+  background-color: #fff;
+}
+
+/* Article List */
+.c-article-list {
+  flex-grow: 0;
+  flex-shrink: 0;
+  margin: 20px 0 0 45px;
+  font-size: 13px;
+}
+.c-article-list__header {
+  font-size: 26px;
+  font-weight: bold;
+  color: #891a13;
+  line-height: 1;
+  margin-bottom: 24px;
+}
+.c-article-list__container {}
+.c-article-list__more {
+  color: #f00;
+  text-align: right;
+}
+.c-article-list__more-word {
+  display: inline-block;
+  border-left: 5px red solid;
+  padding-left: 10px;
+  cursor: pointer;
+}
+
+/* Article Item */
+.c-article-item {
+  display: flex;
+  align-items: center;
+  color: #fff;
+  margin: 10px 0;
+}
+.c-article-item__icon {
+  width: 15px;
+  height: 15px;
+  background: center / contain no-repeat url(../../img/新闻前装饰标.png);
+  flex-grow: 0;
+  flex-shrink: 0;
+}
+.c-article-item__title {
+  flex-grow: 1;
+  max-width: 310px;
+  margin: 0;
+  padding: 0 40px 0 18px;
+  box-sizing: border-box;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.c-article-item__a {
+  color: #fff;
+  text-decoration: none;
+}
+.c-article-item__date {
+  flex-grow: 1;
+  flex-shrink: 0;
+  color: #ccc;
+  text-align: right;
+  box-sizing: border-box;
+}
+
+@media (max-width: 960px) {
+  .main-page {
+    flex-direction: column;
+    margin: 75px auto 0;
+  }
+  .c-article-list {
+    margin: 36px 0 0;
+    max-width: 100%;
+  }
+}

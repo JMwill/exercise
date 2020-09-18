@@ -1,0 +1,14 @@
+{
+  "name": "typescript-practice",
+  "version": "0.0.0",
+  "description": "practice typescript, learn programming",
+  "main": "index.js",
+  "author": "JMwill <787505998@qq.com>",
+  "license": "MIT",
+  "scripts": {
+    "watch": "tsc --watch"
+  },
+  "devDependencies": {
+    "typescript": "^3.1.6"
+  }
+}

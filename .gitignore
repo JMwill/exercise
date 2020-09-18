@@ -44,3 +44,5 @@ algs4-data
 
 # build/dist folder
 dist
+
+.vscode

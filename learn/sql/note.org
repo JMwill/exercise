@@ -1,0 +1,1047 @@
+#+STARTUP: indent
+* MySQL 笔记
+** 修改管理员密码
+#+BEGIN_SRC sql
+ALTER USER 'root'@'localhost'
+IDENTIFIED BY 'password';
+#+END_SRC
+
+** 数据库一般操作
+#+BEGIN_SRC sql
+-- 选择数据库：
+USE <db_name>;
+
+-- 显示所有数据库：
+SHOW DATABASES;
+
+-- 创建数据库：
+CREATE DATABASE <db_name>;
+
+-- 删除数据库：
+DROP DATABASE <db_name>;
+#+END_SRC
+
+** 关键字 SELECT 的使用
+#+BEGIN_SRC sql
+-- 从表格选择所有的列：
+SELECT * FROM <table_name>;
+
+-- 选择一个或者多个列：
+SELECT column1, column2
+FROM <table_name>;
+
+-- 输出的数据去掉重复值：
+-- DISTINCT 作用于所有的列，只有全部值都相同才会被剔除掉
+SELECT DISTINCT vend_id
+FROM Products;
+
+-- 限制输出行数，5 行：
+-- 不同的 DBMS 有不一样的限制方式，需要用时可以再查询
+SELECT prod_name
+FROM Products
+LIMIT 5;
+-- 从第 4 行开始，输出 5 行数据
+SELECT prod_name
+FROM Products
+LIMIT 5 OFFSET 5;
+#+END_SRC
+
+*** 选择后排序，排序语句需要放在 *最后*
+#+BEGIN_SRC sql
+-- 排序选择后的数据，排序语句需要放在最后，还可以根据非选择的列进行排序
+SELECT prod_name
+FROM Products
+ORDER BY prod_name;
+-- 按先后顺序，以多列为根据排序
+SELECT prod_id, prod_price, prod_name
+FROM Products
+ORDER BY prod_price, prod_name;
+-- 图方便时可以直接用位置指明排序对象，2 表示 prod_price，3 表示 prod_name
+SELECT prod_id, prod_price, prod_name
+FROM Products
+ORDER BY 2, 3;
+-- 排序有分升序降序排序，对应的关键词为：ASC（升序）、DESC（降序）
+-- 排序方向关键词只对前方的列有效
+SELECT prod_id, prod_price, prod_name
+FROM Products
+ORDER BY prod_price DESC, prod_name;
+#+END_SRC
+
+*** 以特定条件筛选选择结果
+#+BEGIN_SRC sql
+-- 按规定条件选择需要的数据
+SELECT prod_name, prod_price
+FROM Products
+WHERE prod_price = 3.49;
+
+-- where 的操作符包含一般的 > = < 等，还包含：BETWEEN, IS NULL 这些关键词
+-- <> 相当于 !=，!> 相当于 <=，!< 相当于 >=
+SELECT vend_id, prod_name
+FROM Products
+WHERE vend_id <> 'DLL01';
+
+-- BETWEEN 的应用
+SELECT prod_name, prod_price
+FROM Products
+WHERE prod_price BETWEEN 5 AND 10;
+
+-- 空值判断
+SELECT cust_name
+FROM Customers
+WHERE cust_email IS NULL;
+#+END_SRC
+
+*** 高级过滤，where 结合 not、in 等关键字
+#+BEGIN_SRC sql
+-- AND 关键字的使用
+SELECT prod_id, prod_price, prod_name
+FROM Products
+WHERE vend_id = 'DLL01' AND prod_price <= 4;
+
+-- OR 关键字的使用
+SELECT prod_name, prod_price
+FROM Products
+WHERE vend_id = 'DLL01' OR vend_id = 'BRS01';
+
+-- OR、AND 结合
+SELECT prod_name, prod_price
+FROM Products
+WHERE (vend_id = 'DLL01' OR vend_id = 'BRS01')
+AND prod_price >= 10;
+
+-- 使用 IN 实现 OR 的功能，IN 后接一组由括号包裹，逗号分割的值
+SELECT prod_name, prod_price
+FROM Products
+WHERE vend_id IN ('DLL01', 'BRS01')
+ORDER BY prod_name;
+
+-- NOT 的使用
+SELECT prod_name
+FROM Products
+WHERE NOT vend_id = 'DLL01'
+ORDER BY prod_name;
+#+END_SRC
+
+*** 学用 LIKE，使用通配符过滤（只能用于字符串）
+#+BEGIN_SRC sql
+-- % 可以匹配出现任意次的任意字符，但不可以匹配 NULL。
+-- 匹配 Fish 开头的字符串
+SELECT prod_id, prod_name
+FROM Products
+WHERE prod_name LIKE 'Fish%';
+-- 多次使用通配符
+SELECT prod_id, prod_name
+FROM Products
+WHERE prod_name LIKE '%bean bag%';
+
+-- _ 通配符，匹配单个任意字符
+SELECT prod_id, prod_name
+FROM Products
+WHERE prod_name LIKE '__ inch teddy bear';
+
+-- [] 集合搜索只在 Access 以及 SQL Server 支持
+SELECT cust_contact
+FROM Customers
+WHERE cust_contact LIKE '[JM]%'
+ORDER BY cust_contact;
+
+-- 通配符操作常常消耗更多的性能，使用时遵循以下技巧：
+-- 1. 其他操作符可以达到目的时不要使用通配符
+-- 2. 使用操作符应在越靠后的位置使用，这时的数据量最少，性能消耗最小
+-- 3. 通配符的使用位置需要注意
+#+END_SRC
+
+** 创建计算字段
+**** 一般都用 + 拼接，有些使用 || 进行拼接，MySQL 等一些要用特殊函数
+#+BEGIN_SRC sql
+SELECT vend_name + '(' + vend_country + ')'
+FROM Vendors
+ORDER BY vend_name;
+-- MySQL 的特殊函数
+SELECT Concat(vend_name, '(', vend_country, ')')
+FROM Vendors
+ORDER BY vend_name;
+
+-- 清除掉无用的空格，RTRIM（除右边）、LTRIM（除左边）、TRIM（除两边）
+SELECT Concat(RTRIM(vend_name), '(', RTRIM(vend_country), ')')
+FROM Vendors
+ORDER BY vend_name;
+
+-- 对提取的数据启用别名，AS
+SELECT Concat(RTRIM(vend_name), '(', RTRIM(vend_country), ')')
+AS vend_title
+FROM Vendors
+ORDER BY vend_name;
+#+END_SRC
+**** 执行算术计算
+#+BEGIN_SRC sql
+SELECT prod_id,
+       quantity,
+       item_price,
+       quantity * item_price AS expanded_price
+FROM OrderItems
+WHERE order_num = 20008;
+#+END_SRC
+** 使用函数处理数据
+DBMS 中的函数并不是通用的，每个不同的 DBMS 都有一套自己的函数库
+DBMS 大多包含以下几类函数：
+- 文本函数，处理文本字符串
+- 数值函数，数值数据上进行计算
+- 日期和时间函数，处理日期和时间值并提取特定成分
+- 系统函数，返回 DBMS 特殊信息
+
+*** 文本函数
+常用文本处理函数
+| 函数    | 说明                  |
+|---------+-----------------------|
+| LEFT    | 返回字符串左边的字符  |
+| LENGTH  | 返回字符串长度        |
+| LOWER   | 字符串转为小写        |
+| LTRIM   | 去掉左边空格          |
+| RTRIM   | 去掉右边空格          |
+| RIGHT   | 返回字符串右边字符串  |
+| SOUNDEX | 返回字符串 SOUNDEX 值 |
+| UPPER   | 字符串转为大写        |
+
+#+BEGIN_SRC sql
+-- 文本处理函数 UPPER
+SELECT vend_name, UPPER(vend_name) AS vend_name_upcase
+FROM Vendors
+ORDER BY vend_name;
+
+-- SOUNDEX 函数（查找发音类似的字符串），但并不是所有 DBMS 都支持
+SELECT cust_name, cust_contact
+FROM Customers
+WHERE SOUNDEX(cust_contact) = SOUNDEX('Michael Green');
+#+END_SRC
+
+*** 日期和时间处理函数
+这种类型的函数可移植性最差，不同 DBMS 的实现很不一致
+#+BEGIN_SRC sql
+-- SQL Server 中选取年的函数的使用
+SELECT order_num
+FROM Orders
+WHERE DATEPART(yy, order_date) = 2012;
+-- MySQL 中选取年的函数的使用
+SELECT order_num
+FROM Orders
+WHERE YEAR(order_date) = 2012;
+#+END_SRC
+
+*** 数值处理函数
+DBMS 中最一致的函数，常用的有：
+| 函数   | 说明           |
+|--------+----------------|
+| ABS()  | 返回绝对值     |
+| COS()  | 返回角度余弦   |
+| EXP()  | 返回数的指数值 |
+| PI()   | 返回圆周率     |
+| SIN()  | 发怒以角度正弦 |
+| SQRT() | 返回数的平方根 |
+| TAN()  | 返回角度正切   |
+
+** 汇总数据（聚集函数）
+| 函数    | 说明 |
+|---------+------|
+| AVG()   |      |
+| COUNT() |      |
+| MAX()   |      |
+| MIN()   |      |
+| SUM()   |      |
+#+BEGIN_SRC sql
+-- AVG 函数只能用于单个列，要获得多个列平均值需要
+-- 对一列数据使用 AVG 函数
+SELECT AVG(prod_price) AS avg_price
+FROM Products;
+-- 对过滤后的数据采用 AVG 函数
+SELECT AVG(prod_price) AS avg_price
+FROM Products
+WHERE vend_id = 'DLL01';
+
+-- COUNT 函数，* 会统计全部项，包括 NULL 值。指定列名则会忽略 NULL 值
+SELECT COUNT(*) AS num_cust
+FROM Customers;
+
+-- MAX 函数，返回最大值
+SELECT MAX(prod_price) AS max_price
+FROM Products;
+-- MIN 函数，返回最小值
+SELECT MIN(prod_price) AS min_price
+FROM Products;
+
+-- SUM 函数，总计指定列值
+SELECT SUM(quantity) AS items_ordered
+FROM OrderItems
+WHERE order_num = 20005;
+-- 结合多个函数
+SELECT AVG(DISTINCT prod_price) AS avg_price
+FROM Products
+WHERE vend_id = 'DLL01';
+
+-- 组合聚集函数
+SELECT COUNT(*) AS num_items,
+       MIN(prod_price) AS price_min,
+       MAX(prod_price) AS price_max,
+       AVG(prod_price) AS price_avg
+FROM Products;
+#+END_SRC
+** 分组数据
+涉及到两个子句：GROUP BY、HAVING
+GROUP BY 子句必须要遵循一些规定：
+- 必须出现在 where 子句之后，order by 子句之前
+- 除聚集计算语句外，select 语句中的每一列都必须在 group by 子句中给出
+- group by 子句中列出的每一列都必须是检索列或有效的表达式（不能是聚集函数）
+
+WHERE 过滤行，而这里 HAVING 过滤分组
+WHERE 在数据分组前进行过滤，而 HAVING 则是在数据分组后进行过滤
+#+BEGIN_SRC sql
+-- GROUP BY 与 HAVING 的应用
+SELECT cust_id, COUNT(*) AS orders
+FROM Orders
+GROUP BY cust_id
+HAVING count(*) >= 2;
+
+-- HAVING 与 WHERE 同时应用
+SELECT vend_id, COUNT(*) AS num_prods
+FROM Products
+WHERE prod_price >= 4
+GROUP BY vend_id
+HAVING COUNT(*) >= 2;
+
+-- 使用 GROUP BY 时也应该使用 ORDER BY 保证输出的顺序
+SELECT order_num, COUNT(*) AS items
+FROM OrderItems
+GROUP BY order_num
+HAVING COUNT(*) >= 3
+ORDER BY items, order_num;
+#+END_SRC
+** 使用子查询
+子查询，即嵌套在其他查询中的查询。
+子查询的 select 语句只能查询单个列，检索多个列会出错
+过多子查询会影响性能
+#+BEGIN_SRC sql
+-- 一层子查询
+SELECT cust_id
+FROM Orders
+WHERE order_num IN (SELECT order_num
+                    FROM OrderItems
+                    WHERE prod_id = 'RGAN01');
+-- 二层子查询
+SELECT cust_name, cust_contact
+FROM Customers
+WHERE cust_id IN (SELECT cust_id
+                  FROM Orders
+                  WHERE order_num IN (SELECT order_num
+                                      FROM OrderItems
+                                      WHERE prod_id = 'RGAN01'));
+
+-- 作为计算字段使用子查询
+-- 使用完全列名是为了避免歧义，如果在 SELECT 中操作多个表，就应该使用完全限定列名
+SELECT cust_name,
+       cust_state,
+       (SELECT COUNT(*)
+       FROM Orders
+       WHERE Orders.cust_id = Customers.cust_id) AS orders
+FROM Customers
+ORDER BY cust_name;
+#+END_SRC
+** 联结表
+联结是一种机制，用于在一条 select 语句中关联表，联结多个表返回一组输出。也就是将多个表中的数据关联到一起
+联结并非实际存在，只在查询执行期间存在。
+联结的表越多，性能下降越厉害
+#+BEGIN_SRC sql
+-- 内联结，基于两个表之间的相等测试
+SELECT vend_name, prod_name, prod_price
+FROM Vendors, Products
+WHERE Vendors.vend_id = Products.vend_id;
+-- 同等作用的准确写法
+SELECT vend_name, prod_name, prod_price
+FROM Vendors INNER JOIN Products
+ON Vendors.vend_id = Products.vend_id;
+
+-- 联结多个表
+SELECT prod_name, vend_name, prod_price, quantity
+FROM OrderItems, Products, Vendors
+WHERE Products.vend_id = Vendors.vend_id
+AND OrderItems.prod_id = Products.prod_id
+AND order_num = 20007;
+#+END_SRC
+** 高级联结
+内联结是最为简单的联结，还有其他一些联结：自联结（self-join）、自然联结（natural join）、外联结（outer-join）
+*** 自联结
+#+BEGIN_SRC sql
+-- 使用表别名可以方便多次引用
+SELECT cust_name, cust_contact
+FROM Customers AS C, Orders AS O, OrderItems AS OI
+WHERE C.cust_id = O.cust_id
+AND OI.order_num = O.order_num
+AND prod_id = 'RGAN01';
+
+-- 两段相同结果的 SQL 查询
+-- 子查询
+SELECT cust_id, cust_name, cust_contact
+FROM Customers
+WHERE cust_name = (SELECT cust_name
+                   FROM Customers
+                   WHERE cust_contact = 'Jim Jones');
+-- 联结查询
+SELECT c1.cust_id, c1.cust_name, c1.cust_contact
+FROM Customers AS c1, Customers AS c2
+WHERE c1.cust_name = c2.cust_name
+AND c2.cust_contact = 'Jim Jones';
+#+END_SRC
+*** 自然联结
+对表进行联结，应该至少有一列不止出现在一个表中（被联结的列）。使每列只返回一次
+做法：对一个表使用通配符（SELECT *），对其他表的列使用明确的子集来完成。
+#+BEGIN_SRC sql
+-- 
+SELECT C.*, O.order_num, O.order_date,
+       OI.prod_id, OI.quantity, OI.item_price
+FROM Customers AS C, Orders AS O, OrderItems AS OI
+WHERE C.cust_id = O.cust_id
+AND OI.order_num = O.order_num
+AND prod_id = 'RGAN01';
+#+END_SRC
+*** 外联结
+#+BEGIN_SRC sql
+-- 外联结的 LEFT 与 RIGHT 指的是那个表的行被完全保留
+-- LEFT 指左边的表的行需要完全保留，不管是否符合 ON 后的条件，RIGHT 则是右边
+SELECT Customers.cust_id, Orders.order_num
+FROM Customers LEFT OUTER JOIN Orders
+ON Customers.cust_id = Orders.cust_id;
+
+-- 全外联结
+-- 检索所有行并关联可以关联的行，但 MySQL 等很多的 DBMS 不支持
+select Customers.cust_id, Orders.order_num
+from Orders full order join Customers
+on Orders.cust_id = Customers.cust_id;
+#+END_SRC
+*** 带聚集函数的联结
+#+BEGIN_SRC sql
+SELECT Customers.cust_id,
+COUNT(Orders.order_num) AS num_ord
+FROM Customers INNER JOIN Orders
+ON Customers.cust_id = Orders.cust_id
+GROUP BY Customers.cust_id;
+#+END_SRC
+
+编写 SQL 语句时，在一个联结中可以包含多个表，甚至可以对每个联结采用不同的联结类型。但是先对每个联结进行测试，最后再结合在一起测试能更有利于排除故障
+** 组合查询
+执行多个查询并将结果作为一个结果集返回，这时就需要用到 UNION 操作符，这种查询称为复合查询
+
+使用组合查询的情况主要有两种：
+- 一个查询中从不同的表返回数据结构
+- 对一个表执行多个查询，按一个查询返回数据
+
+UNION 的使用非常简单，只需要在各条 SELECT 语句之间放上关键字 UNION
+
+使用 UNION 时需要注意几条规则：
+- UNION 必须由两条以上的 SELECT 语句组成
+- 每个查询必须包含相同的列、表达式或聚集函数。次序不需要相同
+- 列数据必须兼容，类型不必完全相同
+
+UNION 会自动忽略相同的行，如果需要全部的行的话，可以使用：UNION ALL
+
+#+BEGIN_SRC sql
+-- 普通的 UNION 应用
+SELECT cust_name, cust_contact, cust_email
+FROM Customers
+WHERE cust_state IN ('IL', 'IN', 'MI')
+UNION
+SELECT cust_name, cust_contact, cust_email
+FROM Customers
+WHERE cust_name = 'Fun4All';
+
+-- 对 UNION 后的结果只能使用一次 ORDER BY 进行排序
+-- 不存在适用于对某部分进行某种排序，另一部分进行另一种排序的情况
+SELECT cust_name, cust_contact, cust_email
+FROM Customers
+WHERE cust_state IN ('IL', 'IN', 'MI')
+UNION
+SELECT cust_name, cust_contact, cust_email
+FROM Customers
+WHERE cust_name = 'Fun4All'
+ORDER BY cust_name, cust_contact;
+#+END_SRC
+** 数据插入
+INSERT 用于插入数据到数据库表中，插入的方式分几种：
+- 插入完整的行
+- 插入行的一部分
+- 插入某些查询结果
+
+#+BEGIN_SRC sql
+-- 这里依赖了表中的数据位置，如果表结构改变，这里的插入语句就会引起错误
+-- 更加可行的方式是限定每个位置
+INSERT INTO Customers
+VALUES('1000000006',
+       'Toy Land',
+       '123 Any Street',
+       'New York',
+       'NY',
+       '11111',
+       'USA',
+       NULL,
+       NULL);
+-- 指定数据以及其对应项
+INSERT INTO Customers(cust_id,
+                      cust_name,
+                      cust_address,
+                      cust_city,
+                      cust_state,
+                      cust_zip,
+                      cust_country,
+                      cust_contact,
+                      cust_email)
+VALUES('1000000007',
+       'Toy Land',
+       '123 Any Street',
+       'New York',
+       'NY',
+       '11111',
+       'USA',
+       NULL,
+       NULL);
+
+-- 插入检索出的数据
+INSERT INTO Customers(cust_id,
+                      cust_contact,
+                      cust_email,
+                      cust_name,
+                      cust_address,
+                      cust_city,
+                      cust_state,
+                      cust_zip,
+                      cust_country)
+SELECT cust_id,
+       cust_contact,
+       cust_email,
+       cust_name,
+       cust_address,
+       cust_city,
+       cust_state,
+       cust_zip,
+       cust_country
+FROM CustNew;
+
+-- 使用 INSERT SELECT 导出数据，SELECT INTO 导入数据
+-- 将 Customers 中的数据导入到新表 CustCopy
+select *
+into CustCopy
+from Customers;
+-- MySQL 的语法不太一样
+create table CustCopy as
+select * from Customers;
+#+END_SRC
+** 更新和删除数据
+基本的 UPDATE 语句由三部分组成，分别是：
+- 要更新的表
+- 列名和它们的新值
+- 确定要更新哪些行的过滤条件
+
+#+BEGIN_SRC sql
+-- 更新单个列
+UPDATE Customers
+SET cust_email = 'kim@thetoystore.com'
+WHERE cust_id = '1000000005';
+
+-- 更新多个列，只需要对每个 “列 = 值” 之间用逗号分割
+UPDATE Customers
+SET cust_contact = 'Sam Roberts',
+    cust_email = 'sam@toyland.com'
+WHERE cust_id = '1000000006';
+-- update 中可以使用子查询，有的 DBMS 支持在 UPDATE 中使用 FROM 子句来用一个表的数据更新另一个表的行
+#+END_SRC
+
+DELETE 的使用方式有两种：
+- 从表中删除特定的行
+- 从表中删除所有行
+
+DELETE 不需要列名或通配符，它删除整行，而不是删除列
+DELETE 删除行，但不删除表本身，而且如果要删除整个表的数据可以使用更快的： TRUNCATE TABLE 来实现
+#+BEGIN_SRC sql
+-- 删除某一行
+DELETE FROM Customers
+WHERE cust_id = '1000000006';
+#+END_SRC
+
+以下是一些实践原则：
+- 在 UPDATE 以及 DELETE 使用 WHERE 子句前，先用 SELECT 进行测试，保证 where 得到的是正确的过滤结果。
+- 保证每个表都有主键，以便使用 WHERE 选择
+- 如果 DBMS 允许施加约束来防止执行不带 WHERE 子句的 UPDATE、DELETE 语句的话应该采用这个特性
+** 创建和操纵表
+*** 创建表
+创建表需要提供基本的信息：
+- 新表名称，在 CREATE TABLE 后给出
+- 表列名字和定义用逗号分隔
+- 有的 DBMS 需要指定表的位置
+#+BEGIN_SRC sql
+-- MySQL 中 VARCHAR 需要替换为 TEXT
+CREATE TABLE Products
+(
+    prod_id        CHAR(10)         NOT NULL,
+    vend_id        CHAR(10)         NOT NULL,
+    prod_name      CHAR(254)        NOT NULL,
+    prod_price     DECIMAL(8,2)     NOT NULL,
+    prod_desc      VARCHAR(1000)    NULL
+);
+
+-- 创建时指定默认值
+CREATE TABLE OrderItems
+(
+    order_num      INTEGER          NOT NULL,
+    order_item     INTEGER          NOT NULL,
+    prod_id        CHAR(10)         NOT NULL,
+    quantity       INTEGER          NOT NULL        DEFAULT 1,
+    item_price     DECIMAL(8,2)     NOT NULL
+);
+#+END_SRC
+
+DBMS 中的默认值常用于日期或时间戳列，将系统日期用作默认日期。MySQL 中当前日期使用函数 CURRENT_DATE()，不同的 DBMS 具有不同的日期获取方式，具体需要查询对应的文档
+*** 更新表
+所有的DBMS 都支持 ALTER TABLE 但是所允许的更新内容差别很大
+使用 ALTER TABLE 时需要考虑：
+- 尽可能不在表中包含数据时进行表更新
+- DBMS 允许新增列，但是会限制新增列的数据类型
+- 许多 DBMS 不允许删除或更改表中的列
+- 多数 DBMS 允许重新命名表中的列
+- 许多 DBMS 限制对已经填有数据的列进行更改，对未填有数据的列几乎无限制
+
+#+BEGIN_SRC sql
+-- 为 Vendors 表新增一列
+ALTER TABLE Vendors
+ADD vend_phone CHAR(20);
+
+-- 删除一列
+ALTER TABLE Vendors
+DROP COLUMN vend_phone;
+#+END_SRC
+
+对于复杂的表结构，按照以下步骤删除
+- 用新的列布局创建一个新表
+- 用 insert select 语句从旧表复制数据到新表
+- 检验包含所需数据的新表
+- 重命名旧表
+- 用旧表原来的名字重命名新表
+- 根据需要重新创建触发器、存储过程、索引和外键
+*** 删除表
+删除表使用 DROP TABLE 语句，很简单
+表的删除没有确认、无法撤销。执行语句将永久删除表
+#+BEGIN_SRC sql
+DROP TABLE CustCopy;
+#+END_SRC
+*** 重命名表
+表的重命名没有严格的标准，DBMS 的实现具有差异，具体需要查询 DBMS 文档
+** 视图
+视图作为虚拟的表，只包含使用时动态检索数据的查询
+
+视图的常见应用有：
+- 重用 SQL 语句
+- 简化复杂的 SQL 操作，编写查询后，可以方便地重用而不必知道基本查询细节
+- 使用表的一部分而不是整个表
+- 保护数据。可以授予用户访问表的特定部分的权限，而不是整个表的访问权限
+- 更改数据格式和表示。视图可返回与底层表的表示和格式不同的数据
+
+因为视图并不是真的表，其数据是从别的表检索出来的，因此对于复杂的视图可能会导致性能下降的特别厉害
+
+视图的创建和使用有一些常见的规则：
+- 与表一样，视图必须唯一命名
+- 视图创建的数目没有限制
+- 视图可以嵌套，可以利用其他视图中检索数据的查询来构造视图，但嵌套层数有限制，过多嵌套也会带来性能问题
+- 许多 DBMS 禁止在视图查询中使用 ORDER BY 子句
+
+#+BEGIN_SRC sql
+-- 普通的查询需要知道具体的各个表的结构
+-- 如果想要让不清楚表结构的人也可以简单进行查询，就可以使用视图
+SELECT cust_name, cust_contact
+FROM Customers, Orders, OrderItems
+WHERE Customers.cust_id = Orders.cust_id
+AND OrderItems.order_num = Orders.order_num
+AND prod_id = 'RGAN01';
+-- 使用视图建立表后，让查询想要的数据变得如下面一样方便
+SELECT cust_name, cust_contact
+FROM ProductCustomers
+WHERE prod_id = 'RGAN01';
+#+END_SRC
+
+*** 创建视图
+视图创建用： CREATE VIEW，删除视图用：DROP VIEW。覆盖（或更新）视图前必须先删除它
+视图的最常见应用是隐藏复杂的 SQL
+
+创建视图时，扩展视图的范围能够让视图更容易被重用。也就是说创建的视图不与特定数据绑定
+
+#+BEGIN_SRC sql
+-- 联结三个表，返回的结果作为一个表
+-- 这里创建的视图不绑定特定数据，能够更容易被重用
+CREATE VIEW ProductCustomers AS
+SELECT cust_name, cust_contact, prod_id
+FROM Customers, Orders, OrderItems
+WHERE Customers.cust_id = Orders.cust_id
+AND OrderItems.order_num = Orders.order_num;
+#+END_SRC
+
+视图的另一常见用途：重新格式化检索出的数据
+
+#+BEGIN_SRC sql
+-- 假设经常需要用到如下的查询结果
+-- 那么就可以把它转换为视图
+SELECT CONCAT(RTRIM(vend_name), ' (', RTRIM(vend_country), ')')
+       AS vend_title
+FROM Vendors
+
+-- 创建所需视图
+CREATE VIEW VendorLocations AS
+SELECT CONCAT(RTRIM(vend_name), ' (', RTRIM(vend_country), ')')
+       AS vend_title
+FROM Vendors
+
+-- 后续查询可以通过下面的查询
+SELECT * FROM VendorLocations;
+#+END_SRC
+
+视图还有一个用途是用于过滤不想要的数据
+
+#+BEGIN_SRC sql
+-- 过滤了具有 NULL 值的行就可以得到所有具有有效邮箱地址的客户用于发邮件
+CREATE VIEW CustomerEMailList AS
+SELECT cust_id, cust_name, cust_email
+FROM Customers
+WHERE cust_email IS NOT NULL;
+-- 查询来使用
+SELECT * FROM CustomerEMailList
+#+END_SRC
+
+在简化计算字段的使用上，视图也特别有用
+
+#+BEGIN_SRC sql
+-- 一般时候使用计算字段
+SELECT prod_id,
+       quantity,
+       item_price,
+       quantity * item_price AS expanded_price
+FROM OrderItems;
+WHERE order_num = 20008;
+
+-- 通过对计算字段建立视图，后续的使用就简单得多了
+CREATE VIEW OrderItemsExpanded AS
+SELECT order_num,
+       prod_id,
+       quantity,
+       item_price,
+       quantity * item_price AS expanded_price
+FROM OrderItems;
+-- 使用语句
+SELECT * FROM OrderItemsExpanded
+WHERE order_num = 20008;
+#+END_SRC
+
+** 使用存储过程
+有些复杂的操作需要多条语句才能完成，这多条语句的执行次序有可能不是固定的，可能根据数据库表内的数据状态而变化。这个时候就需要用到存储过程。
+
+使用存储过程的理由：
+- 把处理封装在一个易用的单元中，简化复杂操作
+- 不要求反复建立一系列处理步骤，保证了数据一致性
+- 简化对变动的管理，如果表名、列名、业务逻辑等有改变，只需要修改存储过程的代码，保证了安全性
+- 存储过程经过编译，性能好
+- 有一些只能用在单个请求中的 SQL 元素和特性，存储过程可以使用其来编写功能更强更灵活的代码
+*** 执行存储过程
+存储过程执行比编写频繁，这里先了解其执行
+#+BEGIN_SRC sql
+EXECUTE AddNewProduct('JTS01',
+                      'Stuffed Eiffel Tower',
+                      6.49,
+                      'Plush stuffed toy with the text La Tour Eiffel in red white and blue');
+#+END_SRC
+
+要能正确执行上述语句，存储过程需要完成的工作有：
+- 验证传递的数据，保证所有参数都有值
+- 生成用作主健的唯一 ID
+- 插入目标表中，在合适的列中存储生成的主键和传递的数据
+
+存储过程在不同的 DBMS 中还具有一些其他可供选择的执行：
+- 参数可选，具有不提供参数时的默认值
+- 可以不按照次序给出参数，用 “参数 = 值” 的形式
+- 输出参数
+- 用 SELECT 语句检索数据
+- 返回代码，允许存储过程返回一个值到正在执行的应用程序
+*** 创建存储过程
+因为各个 DBMS 创建存储过程的方式都不太一样，因此这里只展示一个 Oracle 例子，具体创建过程需要参考文档
+#+BEGIN_SRC sql
+CREATE PROCEDURE MailingListCount (
+    ListCount OUT INTEGER
+)
+IS
+v_rows INTEGER;
+BEGIN
+    SELECT COUNT(*) INTO v_rows
+    FROM Customers
+    WHERE NOT cust_email IS NULL;
+    ListCount := v_rows;
+END;
+-- 调用函数
+var ReturnValue NUMBER
+EXEC MailingListCount(:ReturnValue);
+SELECT ReturnValue;
+#+END_SRC
+** 管理事务处理
+事务处理可以确保成批执行的 SQL 操作要么完全执行，要么完全不执行，可以维护数据库的完整性
+
+事务执行的过程中，如果没有错误发生，整组语句会提交到数据库表，如果出错，则回退到某个已知且安全的状态
+
+关于事务的几个术语：
+- 事务：一组 sql 语句
+- 回退：撤销指定 sql 语句的过程
+- 提交：将未存储的 sql 语句结果写入数据库表
+- 保留点：事务处理过程中设置的临时占位符，可以对其发布回退（与回退整个事务处理不同）
+
+事务的回退不是所有都可以的，事务用于管理 INSERT、UPDATE、DELETE 语句，但对于 CREATE、DROP 操作无法撤销
+
+不同 dbms 实现事务语法有所不同，而管理事务的关键在于将 sql 语句组分解为逻辑块，并明确规定数据何时应该回退，何时不应该回退
+
+#+BEGIN_SRC sql
+-- MySQL 中标识事务处理块开始
+-- 其中 COMMIT 用于保存更改，ROLLBACK 用于撤销
+START TRANSACTION
+
+-- ROLLBACK 使用例子
+DELETE FROM Orders;
+ROLLBACK;
+#+END_SRC
+
+一般的 sql 语句是直接进行隐式提交，而在事务处理块中，提交不会隐式进行。要进行明确的提交需要使用 COMMIT 语句
+
+#+BEGIN_SRC sql
+-- 这里需要保证订单不被部分删除，因此用事务进行处理就正合适
+START TRANSACTION
+DELETE OrderItems WHERE order_num = 12345
+DELETE Orders WHERE order_num = 12345
+COMMIT TRANSACTION
+#+END_SRC
+
+*** 使用保留点
+对于简单的事务，使用 rollback、commit 就可以完成工作，但对于某些复杂事务而言，有可能需要部分提交或回退。这时就需要用到保留点，在事务处理块合适位置放置占位符，以便回退时可以回退到某个占位符。这里占位符就称为保留点
+
+#+BEGIN_SRC sql
+-- MySQL 中创建占位符，保留点名称需要是唯一的，以便回退时能够正确识别
+SAVEPOINT delete1;
+
+-- 回退时执行下列语句
+ROLLBACK TO delete1;
+
+
+-- 以下是一个完整的 SQL Server 的例子
+BEGIN TRANSACTION
+INSERT INTO Customers(cust_id, cust_name)
+VALUES('1000000010', 'Toys Emporium');
+SAVE TRANSACTION StartOrder;
+INSERT INTO Orders(order_num, order_date, cust_id)
+VALUES(20100, '2001/12/1', '1000000010');
+-- 这个是 SQL Server 提供的检查操作是否成功的变量，其他 DBMS 提供的不一样
+IF @@ERROR <> 0 ROLLBACK TRANSACTION StartOrder;
+INSERT INTO OrderItems(order_num, order_item, prod_id, quantity, item_price)
+VALUES(20100, 1, 'BR01', 100, 5.49);
+IF @@ERROR <> 0 ROLLBACK TRANSACTION StartOrder;
+INSERT INTO OrderItems(order_num, order_item, prod_id, quantity, item_price)
+VALUES(20100, 2, 'BR03', 100, 10.99);
+IF @@ERROR <> 0 ROLLBACK TRANSACTION StartOrder;
+COMMIT TRANSACTION
+#+END_SRC
+
+** 使用游标
+简单使用 select 语句无法得到相对行数的数据，如第一行、下一行、前 10 行等
+在结果集中进行前进或后退时就需要用到游标，它是一个存储在 DBMS 服务器上的数据库查询，是被 SELECT 语句检索出来的结果集，在存储游标后，可以根据需要滚动或浏览其中的数据
+
+游标常见的一些特性与选项：
+- 能够标记为只读，使其不能更新与删除
+- 能控制可以执行的定向操作（向前、向后...）
+- 能标记某些列为可编辑的，某些列不可
+- 规定范围，使游标对创建它的特定请求或对所有请求可访问
+- 指示 DBMS 对检索出的数据进行复制使数据在游标打开和访问期间不变化
+
+使用游标涉及几个明确的步骤：
+- 使用游标前必须声明（定义）它
+- 一旦声明，就必须打开游标以供使用。这个过程会用前面定义的 SELECT 语句把数据实际检索出来
+- 对于填有数据的游标，根据需要取出（检索）各行
+- 在结束游标使用时，必须关闭游标，可能的话，释放游标
+
+*** 创建游标
+#+BEGIN_SRC sql
+-- 定义一个包含没有电子邮件地址的所有顾客的游标
+DECLARE CustCursor CURSOR
+FOR
+SELECT * FROM Customers
+WHERE cust_email IS NULL
+-- 使用游标
+OPEN CURSOR CustCursor
+-- 关闭游标
+CLOSE CustCursor;
+#+END_SRC
+
+在打开游标后就可以用 FETCH 语句访问游标数据，指出要检索哪些行，从哪里检索以及将其放于何处等等
+
+游标关闭后，将不能使用，只有再次打开后才能使用，而二次打开时不需要再次声明，只要用 OPEN 打开即可
+** 高级 SQL 特性
+*** 约束
+约束是管理如何插入或处理数据库数据的规则，它保证了数据引用的完整性，避免了在客户端层面上实施数据库完整性规则
+
+约束有几种：主键、外键、唯一约束
+
+**** 主键
+特殊约束，用于保证一列（一组列）的值是唯一的，且永不改动，也就是表中的一列（或多列）唯一标识表中一行，方便直接或交互地处理表中的行
+
+作为主键需要满足：
+- 任意两行主键值都不相同
+- 每行都具有一个主键值（列中不允许 NULL 值）
+- 包含主键值的列从不修改或更新
+- 主键值不能重用，即某一行删除了，其主键值不分配给新行
+
+#+BEGIN_SRC sql
+-- 创建表时定义主键
+CREATE TABLE Vendors
+(
+    vend_id       CHAR(10)      NOT NULL      PRIMARY KEY,
+    vend_name     CHAR(50)      NOT NULL,
+    ...
+);
+
+-- 修改表某列为主键
+ALTER TABLE Vendors
+ADD CONSTRAINT PRIMARY KEY (vend_id);
+#+END_SRC
+
+**** 外键
+表中的一列，其值必须在另一表的主键中，外键是保证数据完整性的重要部分
+
+#+BEGIN_SRC sql
+-- 创建时定义外键
+CREATE TABLE Orders
+(
+    order_num        INTEGER       NOT NULL      PRIMARY KEY,
+    order_date       DATETIME      NOT NULL,
+    cust_id          CHAR(10)      NOT NULL      REFERENCES Customers(cust_id)
+);
+
+-- 修改某个列为外键
+ALTER TABLE Orders
+ADD CONSTRAINT
+FOREIGN KEY (cust_id) REFERENCES Customers (cust_id)
+#+END_SRC
+
+外键有助于防止意外删除
+
+**** 唯一约束
+用于保证一列（或一组列）中的数据是唯一的，类似于主键，但区别如下：
+- 表可包含多个唯一约束，主键则只有一个
+- 唯一约束列可包含 NULL 值
+- 唯一约束列可修改或更新
+- 唯一约束列的值可重复使用
+- 唯一约束不能用来定义外键
+
+唯一约束通过用 UNIQUE 关键字在创建表时定义或者用单独的 CONSTRAINT 定义
+
+**** 检查约束
+用于保证一列（一组列）中的数据满足一组指定的条件，常见用途有：
+- 检查最小或最大值
+- 指定范围
+- 只允许特定的值
+
+#+BEGIN_SRC sql
+-- 添加检查约束的例子
+CREATE TABLE OrderItems
+(
+    order_num     INTEGER     NOT NULL,
+    order_item    INTEGER     NOT NULL,
+    prod_id       CHAR(10)    NOT NULL,
+    quantity      INTEGER     NOT NULL     CHECK (quantity > 0),
+    item_price    MONEY       NOT NULL
+);
+-- 另一个例子
+ADD CONSTRAINT CHECK (gender LIKE '[MF]')
+#+END_SRC
+
+*** 索引
+用于排序数据以加快搜索和排序操作的速度，对于本来无序的数据，要想提高检索速度就需要用到索引。在一个或多个列上定义索引，让 DBMS 保存其内容的一个排过序的列表。定义了索引后，DBMS 就可以搜索排过序的索引，找出匹配的位置，然后检索对应的行。
+
+创建索引前需要记住：
+- 索引改善检索操作的性能，但会降低数据插入、修改和删除的性能。因为上述操作执行时，DBMS 需要动态更新索引
+- 索引数据可能要占用大量存储空间
+- 并非所有的数据都适合做索引，取值不多的数据建立索引得到的好处更小
+- 索引用于数据过滤和数据排序，对于经常需要以特定顺序排序数据，则该数据更适合做索引
+- 可以在索引中定义多个列
+
+#+BEGIN_SRC sql
+-- 不同 dbms 创建索引的语句变化很大，下面提供一个例子
+CREATE INDEX prod_name_ind
+ON Products (prod_name);
+#+END_SRC
+
+索引命名也必须是唯一的
+
+索引的效率随表数据的增加或改变而变化，最好定期检查索引，并根据需要对索引进行调整
+
+*** 触发器
+触发器是特殊的存储过程，在特定的数据库活动发生时自动执行。
+
+触发器可以与特定表上的 INSERT、UPDATE 和 DELETE 操作（或组合）相关联
+
+与存储过程不一样，触发器与单个表相关联
+
+触发器内的代码具有以下数据的访问权：
+- INSERT 操作中的所有新数据
+- UPDATE 操作中的所有新数据和旧数据
+- DELETE 操作中删除的数据
+
+触发器常见用途：
+- 保证数据一致，如在插入时保证名称为全大写
+- 基于某个表变动在其他表上执行活动。如更新或删除一行时，将审计跟踪记录写入某个日志表
+- 进行额外的验证并根据需要回退数据。如保证某个顾客的可用资金不超限定等
+- 计算计算列的值或更新时间戳
+
+#+BEGIN_SRC sql
+-- SQL Server 创建触发器的例子
+CREATE TRIGGER customer_state
+ON Customers
+FOR INSERT, UPDATE
+AS
+UPDATE Customers
+SET cust_state = Upper(cust_state)
+WHERE Customers.cust_id = inserted.cust_id
+#+END_SRC
+
+约束的处理比触发器快，在可能的时候尽量使用约束
+
+** SQL 数据类型
+*** 串数据类型
+| 数据类型 | 说明                                           |
+|----------+------------------------------------------------|
+| CHAR     | 1～255个字符的定长字符串，创建时规定长度       |
+| NCHAR    | CHAR 的特殊形式，用于支持多字节或 Unicode 字符 |
+| NVARCHAR | TEXT 的特殊形式，用于支持多字节或 Unicode 字符 |
+| TEXT     | 变长文本                                           |
+当数值是计算中使用的数值，则应该存储在数值数据类型列中；如果作为字符串使用则应该保存在字符串数据类型中
+
+*** 数值数据类型
+| 数据类型              | 说明                                            |
+|-----------------------+-------------------------------------------------|
+| BIT                   | 单个二进制位，0 或 1，用于开/关标志             |
+| DECIMAL（或 NUMERIC） | 定点或精度可变的浮点值                          |
+| FLOAT（或 NUMBER）    | 浮点值                                          |
+| INT（或 INTEGER）     | 4 字节整数值，支持 -2147483648～2147483647 的数 |
+| REAL                  | 4 字节浮点值                                    |
+| SMALLINT              | 2 字节整数值，支持 -32768～32767 的数           |
+| TINYINT               | 1 字节整数值，支持 0～255 的数                  |
+
+*** 日期和时间数据类型
+| 数据类型                 | 说明                 |
+|--------------------------+----------------------|
+| DATE                     | 日期值               |
+| DATETIME（或 TIMESTAMP） | 日期时间值           |
+| SMALLDATETIME            | 日期时间值，精确到分 |
+| TIME                     | 时间值               |
+
+*** 二进制数据类型
+| 数据类型                 | 说明                                                            |
+|--------------------------+-----------------------------------------------------------------|
+| BINARY                   | 定长二进制数据（最大长度从 255B 到 8000B，有赖于具体实现）      |
+| LONG RAW                 | 变长二进制数据，最长 2 GB                                       |
+| RAW（某些实现为 BINARY） | 定长二进制数据，最多 255B                                       |
+| VARBINARY                | 变长二进制数据（最大长度一般在 255 B 到 8000B，有赖于具体实现） |

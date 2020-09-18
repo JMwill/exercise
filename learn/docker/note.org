@@ -1,0 +1,10 @@
+#+STARTUP: indent
+* Docker 笔记
+** 创建带共享文件夹的实例
+#+BEGIN_SRC shell
+docker run --name=container_name -v `pwd`:/outside -d <image:tag>
+#+END_SRC
+** 对实例执行内部程序
+#+BEGIN_SRC shell
+docker exec -it container_name mysql -uroot -p
+#+END_SRC
